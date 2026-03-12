@@ -12,8 +12,13 @@
             <li><a href="{{url_for('browse')}}">browse</a></li>
             <li><a href="{{url_for('search')}}">search</a></li>
             <li><a href="{{url_for('upload')}}">upload</a></li>
-            <li><a href="{{url_for('login')}}">Login</a></li>
-            <li><a href="{{url_for('register')}}">Register</a></li>
+            {% if current_user.is_authenticated %}
+                <li><a href="{{url_for('account')}}">account</a></li>
+                <li><a href="{{url_for('logout')}}">logout</a></li>
+            {% else %}
+                <li><a href="{{url_for('login')}}">Login</a></li>
+                <li><a href="{{url_for('register')}}">Register</a></li>
+            {% endif %}
         </ul>
     </nav>
 

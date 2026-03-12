@@ -1,0 +1,397 @@
+================================================================================
+  CAMPUSNOTE — PROJECT ARCHITECTURE & TO-DO LIST
+================================================================================
+Legend:  [DONE]  Already implemented
+         [TODO]  Needs to be built
+         [WIP]   Started but incomplete
+
+Track your progress by replacing [TODO] with [DONE] as you finish each task.
+================================================================================
+
+
+────────────────────────────────────────────────────────────────────────────────
+PHASE 1 — DATABASE MODELS
+────────────────────────────────────────────────────────────────────────────────
+
+[DONE] University model           (id, name)
+[DONE] Department model          (id, name, university_id FK)
+[DONE] Year model                (id, label, department_id FK)
+[DONE] Semester model            (id, label, year_id FK)
+[DONE] Subject model             (id, name, semester_id FK)
+[DONE] User model                (id, username, email, password, profile_pic,
+                                   joined_at)
+[DONE] Note model                (id, title, description, file_path,
+                                   uploaded_at, user_id FK, subject_id FK)
+[DONE] Rating model              (id, score 1–5, user_id FK, note_id FK,
+                                   unique constraint on user+note pair)
+
+[TODO] Add avg_rating helper     — Add a property or hybrid_property to the
+                                   Note model that computes the average Rating
+                                   score so templates can show it easily.
+                                   Example:
+                                     from sqlalchemy import func
+                                     @property
+                                     def avg_rating(self):
+                                         ratings = Rating.query.filter_by(note_id=self.id).all()
+                                         if not ratings:
+                                             return None
+                                         return round(sum(r.score for r in ratings) / len(ratings), 1)
+
+[TODO] Seed the database         — Create a script (e.g. seed_db.py at root)
+                                   that populates the hierarchy tables so
+                                   Browse actually has data to show.
+                                   Minimum seed data needed:
+                                     Universities : RUET, BUET, DU  (examples)
+                                     Departments  : CSE, EEE, ME    (per uni)
+                                     Years        : 1st Year … 4th Year
+                                     Semesters    : 1st Semester, 2nd Semester
+                                     Subjects     : at least 4–5 per semester
+
+
+────────────────────────────────────────────────────────────────────────────────
+PHASE 2 — FORMS  (campusnote/forms.py)
+────────────────────────────────────────────────────────────────────────────────
+
+[DONE] RegisterForm              (username, email, password, confirm_password)
+         — unique username + email validators already in place
+[DONE] LoginForm                 (email, password, remember)
+[DONE] UpdateAccountForm         (username, email, picture)
+         — validate_username / validate_email in place
+
+[TODO] Fix UpdateAccountForm validators
+         — validate_username and validate_email must EXCLUDE the current user
+           or they will always fire when the user keeps their own username/email.
+           Fix:
+             from flask_login import current_user
+             def validate_username(self, username):
+                 if username.data != current_user.username:
+                     user = User.query.filter_by(username=username.data).first()
+                     if user:
+                         raise ValidationError('Username already taken.')
+             (same pattern for validate_email)
+
+[TODO] UploadNoteForm            — New form for uploading notes.
+         Fields needed:
+           title           StringField   (DataRequired, Length max 150)
+           description     TextAreaField (Optional)
+           university      SelectField   (coerce=int, choices loaded from DB)
+           department      SelectField   (coerce=int, choices loaded from DB)
+           year            SelectField   (coerce=int, choices loaded from DB)
+           semester        SelectField   (coerce=int, choices loaded from DB)
+           subject         SelectField   (coerce=int, choices loaded from DB)
+           note_file       FileField     (FileAllowed ['pdf','jpg','png'])
+           submit          SubmitField
+
+[TODO] SearchForm                — Simple form used in the search bar.
+         Fields needed:
+           query           StringField   (DataRequired)
+           university      SelectField   (optional filter, choices from DB,
+                                          include a blank "All Universities"
+                                          option)
+           department      SelectField   (optional filter, same pattern)
+           submit          SubmitField
+
+
+────────────────────────────────────────────────────────────────────────────────
+PHASE 3 — ROUTES  (campusnote/routes.py)
+────────────────────────────────────────────────────────────────────────────────
+
+[DONE] GET  /  and  /home        — home()   renders home.html
+[DONE] GET/POST  /register       — register()
+[DONE] GET/POST  /login          — login()  with next_page redirect
+[DONE] GET  /logout              — logout() @login_required
+[DONE] GET/POST  /account        — account() @login_required, profile picture
+                                    resize + save, form pre-population on GET
+
+─── Browse (Hierarchical drill-down) ──────────────────────────────────────────
+
+[WIP]  GET  /browse              — browse()  currently returns pass (empty)
+
+[TODO] Implement browse route    — The route must handle multiple drill-down
+                                   steps using query parameters:
+                                     /browse                     → list unis
+                                     /browse?uni=1               → list depts
+                                     /browse?uni=1&dept=2        → list years
+                                     /browse?uni=1&dept=2&yr=3   → list sems
+                                     /browse?uni=1&…&sem=4       → list subjects
+                                     /browse?uni=1&…&sub=5       → list notes
+                                   Logic skeleton:
+                                     uni_id  = request.args.get('uni',  type=int)
+                                     dept_id = request.args.get('dept', type=int)
+                                     yr_id   = request.args.get('yr',   type=int)
+                                     sem_id  = request.args.get('sem',  type=int)
+                                     sub_id  = request.args.get('sub',  type=int)
+                                     # query appropriate model depending on
+                                     # which args are present, pass context
+                                     # to browse.html
+
+─── Search ─────────────────────────────────────────────────────────────────────
+
+[WIP]  GET  /search              — search() currently returns pass (empty)
+
+[TODO] Implement search route    — Capture query string + optional filters.
+                                   Core query:
+                                     results = Note.query.filter(
+                                         Note.title.ilike(f'%{q}%')
+                                     ).all()
+                                   Add optional join filters if uni/dept
+                                   is selected in the form.
+                                   Pass results + avg ratings to search.html.
+
+─── Upload Note ────────────────────────────────────────────────────────────────
+
+[WIP]  GET  /upload              — upload() @login_required, returns pass
+
+[TODO] Implement upload route    — Handle GET (show form) and POST (process).
+                                   POST logic steps:
+                                     1. Validate UploadNoteForm
+                                     2. Validate file extension server-side
+                                        (do NOT trust client extension alone)
+                                     3. Generate a safe random filename:
+                                          random_hex = secrets.token_hex(8)
+                                          _, ext = os.path.splitext(filename)
+                                          safe_name = random_hex + ext
+                                     4. Save file to:
+                                          app.root_path/static/uploads/notes/
+                                        Create the folder if it doesn't exist.
+                                     5. Store the relative path string in DB:
+                                          note.file_path = 'uploads/notes/' + safe_name
+                                     6. Create Note row with all FK links
+                                        (user_id, subject_id, etc.)
+                                     7. db.session.add(note); db.session.commit()
+                                     8. flash success and redirect
+
+─── Rating ─────────────────────────────────────────────────────────────────────
+
+[TODO] POST /rate/<note_id>      — rate_note() @login_required
+                                   Accept a score (1–5) from a form/AJAX call.
+                                   Check UniqueConstraint: if rating already
+                                   exists, update it; otherwise insert new.
+                                   Redirect back to note detail page.
+
+─── Note Detail ─────────────────────────────────────────────────────────────────
+
+[TODO] GET  /note/<note_id>      — note_detail() 
+                                   Show full metadata, file preview/download
+                                   link, uploader info, average rating, and
+                                   a 1–5 star rating form for logged-in users.
+
+
+────────────────────────────────────────────────────────────────────────────────
+PHASE 4 — TEMPLATES
+────────────────────────────────────────────────────────────────────────────────
+
+─── layout.html ────────────────────────────────────────────────────────────────
+
+[TODO] Conditional nav bar       — Show different links based on login state:
+
+         Logged-OUT nav:
+           Home | Browse | Search | Login | Register
+
+         Logged-IN nav:
+           Home | Browse | Search | Upload Note | [Account ▼]
+                                                    My Profile
+                                                    My Uploads
+                                                    ── ── ──
+                                                    Logout
+
+         Jinja pattern inside layout.html:
+           {% if current_user.is_authenticated %}
+             ...logged-in links...
+           {% else %}
+             ...logged-out links...
+           {% endif %}
+
+[TODO] Flash message block       — Add inside layout.html so every page shows
+                                   alerts automatically:
+                                     {% with messages = get_flashed_messages(with_categories=true) %}
+                                       {% if messages %}
+                                         {% for category, message in messages %}
+                                           <div class="alert alert-{{ category }}">{{ message }}</div>
+                                         {% endfor %}
+                                       {% endif %}
+                                     {% endwith %}
+
+─── home.html ──────────────────────────────────────────────────────────────────
+
+[TODO] Landing page (logged-out) — Large hero section:
+                                     Headline: "Your Campus. Your Notes. Organized."
+                                     Sub-headline: describe the platform briefly
+                                     Two CTA buttons: "Start Browsing" → /browse
+                                                       "Register Free" → /register
+
+[TODO] Dashboard (logged-in)     — Different block when current_user.is_authenticated:
+                                     1. Prominent search bar (GET form → /search)
+                                     2. "Recent Uploads" section: query the 8
+                                        most recently uploaded notes:
+                                          Note.query.order_by(Note.uploaded_at.desc())
+                                               .limit(8).all()
+                                     3. "Top Rated" section (stretch goal):
+                                        join Note + Rating, order by avg score
+
+─── browse.html ────────────────────────────────────────────────────────────────
+
+[TODO] Breadcrumb trail          — Show the user where they are in the hierarchy:
+                                     Universities → RUET → CSE → 2nd Year → …
+
+[TODO] Cards / list for each step — Render whatever the route passes in context:
+                                     universities, departments, years,
+                                     semesters, subjects, or notes.
+                                     Each card links to the next drill-down
+                                     step by appending the next query param.
+
+─── search.html ─────────────────────────────────────────────────────────────────
+
+[TODO] Search bar + filter row   — Text input + optional University / Department
+                                   dropdowns side by side. Submit on Enter.
+
+[TODO] Results list              — Loop through results, show for each note:
+                                     title, uploader username, subject name,
+                                     upload date, average rating (★ stars),
+                                     a "View / Download" button.
+
+─── upload_notes.html ───────────────────────────────────────────────────────────
+
+[TODO] Two-part upload form      — Part 1 — File picker (PDF/JPG/PNG only)
+                                   Part 2 — Metadata dropdowns:
+                                     University → Department → Year →
+                                     Semester → Subject
+                                   (Consider using JavaScript fetch to
+                                    dynamically load child dropdowns when
+                                    a parent selection changes — optional
+                                    but improves UX greatly)
+                                   Title and Description text fields.
+                                   Submit button.
+
+─── note_detail.html (NEW) ──────────────────────────────────────────────────────
+
+[TODO] Create note_detail.html   — Show:
+                                     Note title + description
+                                     Uploader name + date
+                                     File: embedded PDF viewer or image, with
+                                           a direct download link
+                                     Average rating display (e.g. 4.2 / 5 ★)
+                                     Star rating form (1–5) for logged-in users
+
+─── account.html ────────────────────────────────────────────────────────────────
+
+[DONE] Profile picture + update form already rendered
+
+[TODO] "My Uploads" section      — Below the update form, add a section that
+                                   lists all notes the current user has uploaded:
+                                     notes = Note.query.filter_by(
+                                                 user_id=current_user.id
+                                             ).order_by(Note.uploaded_at.desc()).all()
+                                   Pass this to account.html from the route.
+                                   Each row: note title, subject, date,
+                                   and a delete button (with CSRF protection
+                                   via a small POST form).
+
+[TODO] Delete note route         — POST /note/<note_id>/delete  @login_required
+                                     Verify current_user.id == note.user_id
+                                     (never let a user delete another's note).
+                                     Delete the physical file from disk first,
+                                     then db.session.delete(note).
+
+
+────────────────────────────────────────────────────────────────────────────────
+PHASE 5 — STATIC ASSETS  (campusnote/static/)
+────────────────────────────────────────────────────────────────────────────────
+
+[TODO] Create uploads/notes/     — mkdir campusnote/static/uploads/notes/
+                                   Add a .gitkeep file inside so git tracks
+                                   the empty folder. Add the actual uploads
+                                   folder to .gitignore so user files are not
+                                   committed.
+
+[TODO] Update main.css           — Style the navbar (logged-in vs logged-out),
+                                   hero section, browse cards, search results,
+                                   star-rating widget, flash alerts, upload form.
+
+[TODO] Add default.jpg           — Place a generic avatar image at:
+                                     campusnote/static/profile_pics/default.jpg
+                                   (Required — account page references it.)
+
+
+────────────────────────────────────────────────────────────────────────────────
+PHASE 6 — SECURITY CHECKLIST  (must check before any release)
+────────────────────────────────────────────────────────────────────────────────
+
+[TODO] File upload security      — Whitelist extensions server-side (.pdf .jpg .png)
+                                   Never trust the client's stated MIME type.
+                                   Use secrets.token_hex() for stored filenames
+                                   so users cannot predict or overwrite each other's
+                                   files.
+
+[TODO] Authorization checks      — Every route that modifies data must verify
+                                   ownership:
+                                     if note.user_id != current_user.id:
+                                         abort(403)
+
+[TODO] CSRF protection           — Flask-WTF is already installed; ensure
+                                   every HTML form includes {{ form.hidden_tag() }}
+                                   or {% csrf_token %}.
+
+[TODO] Fix validate_email in     — Currently returns a queryset (always truthy)
+       RegisterForm / UpdateForm   instead of .first(). Fix:
+                                     user = User.query.filter_by(email=email.data).first()
+                                     if user:
+                                         raise ValidationError(...)
+
+[TODO] Secret key in config      — Move SECRET_KEY and database URI out of
+                                   source code and into environment variables
+                                   or a config.py excluded from git.
+
+[TODO] Password reset flow       — (Stretch goal) Allow users to reset forgotten
+                                   passwords via a timed token sent to their email.
+
+
+────────────────────────────────────────────────────────────────────────────────
+PHASE 7 — STRETCH GOALS  (build after core is complete)
+────────────────────────────────────────────────────────────────────────────────
+
+[ ] Dynamic dependent dropdowns  — Use JavaScript + a /api/departments?uni=1
+                                   JSON endpoint to reload child dropdowns
+                                   without a full page reload in upload form
+                                   and search filters.
+
+[ ] Pinned subjects on dashboard — Let logged-in users pin a Browse path
+                                   (e.g. RUET → CSE → 2nd Year → 1st Sem)
+                                   so the home dashboard shows a shortcut.
+
+[ ] Pagination                   — Add Flask-SQLAlchemy paginate() to Browse
+                                   note lists and Search results so large
+                                   result sets don't overwhelm the page.
+
+[ ] Comments on notes            — Let students leave text feedback on each
+                                   note (new Comment model with note_id FK).
+
+[ ] Download counter             — Add a downloads integer column to Note,
+                                   increment it every time a file is served.
+
+
+────────────────────────────────────────────────────────────────────────────────
+RECOMMENDED BUILD ORDER
+────────────────────────────────────────────────────────────────────────────────
+
+Follow this sequence to always have a working app at every step:
+
+  Step 1   Fix the validate_email bug (RegisterForm + UpdateAccountForm)
+  Step 2   Add avg_rating property to Note model
+  Step 3   Create seed_db.py and populate the hierarchy tables
+  Step 4   Create uploads/notes/ folder + add default.jpg
+  Step 5   Implement the Browse route + browse.html (read-only, no login needed)
+  Step 6   Add UploadNoteForm to forms.py
+  Step 7   Implement the Upload route + upload_notes.html
+  Step 8   Implement the Search route + search.html
+  Step 9   Create note_detail.html + note detail route + rating route
+  Step 10  Add "My Uploads" + delete note to account page
+  Step 11  Update layout.html nav bar (conditional logged-in / logged-out)
+  Step 12  Build home.html landing page + logged-in dashboard
+  Step 13  Move SECRET_KEY to environment variable
+  Step 14  Style everything in main.css
+  Step 15  (Optional) Dynamic dropdowns with JavaScript fetch
+
+================================================================================
+END OF FILE
+================================================================================

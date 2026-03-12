@@ -1,5 +1,6 @@
 from datetime import datetime
 from campusnote import db
+from flask_login import UserMixin
 
 class University(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -32,7 +33,7 @@ class Subject(db.Model):
     notes = db.relationship('Note', backref='subject', lazy=True)
 
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
@@ -41,6 +42,7 @@ class User(db.Model):
     joined_at = db.Column(db.DateTime, default=datetime.utcnow)
     notes = db.relationship('Note', backref='uploader', lazy=True)
     
+        
 
 class Note(db.Model):
     id = db.Column(db.Integer, primary_key=True)

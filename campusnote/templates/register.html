@@ -9,7 +9,7 @@
             {{form.username.label()}}
             {% if form.username.errors %}
                 {% for error in form.username.errors %}
-                    <span>error</span>
+                    <span>{{error}}</span>
                 {% endfor %}
             {% else %}
                 {{ form.username() }}
@@ -20,7 +20,7 @@
             {{form.email.label()}}
             {% if form.email.errors %}
                 {% for error in form.email.errors %}
-                    <span>error</span>
+                    <span>{{error}}</span>
                 {% endfor %}
             {% else %}
                 {{ form.email() }}
@@ -31,7 +31,7 @@
             {{form.password.label()}}
             {% if form.password.errors %}
                 {% for error in form.password.errors %}
-                    <span>error</span>
+                    <span>{{error}}</span>
                 {% endfor %}
             {% else %}
                 {{ form.password() }}
@@ -42,7 +42,7 @@
             {{form.confirm_password.label()}}
             {% if form.confirm_password.errors %}
                 {% for error in form.confirm_password.errors %}
-                    <span>error</span>
+                    <span>{{error}}</span>
                 {% endfor %}
             {% else %}
                 {{ form.confirm_password() }}

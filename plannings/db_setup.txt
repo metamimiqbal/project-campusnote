@@ -1,0 +1,75 @@
+CampusNote DB Setup Guide
+
+Why this file exists
+- We hit two issues:
+  1) Circular import: models.py needed db before db was initialized.
+  2) SQLite table missing: "no such table: user" because schema was not created yet.
+
+Project behavior to remember
+- DB URI is sqlite:///site.db
+- For Flask, this resolves to: instance/site.db
+- Defining models in code does NOT create tables automatically.
+
+----------------------------------------
+1) Correct app initialization order
+----------------------------------------
+In campusnote/__init__.py:
+- Create app
+- Configure app
+- Initialize db = SQLAlchemy(app)
+- THEN import models (example: from campusnote.models import User)
+
+Do NOT import User/models before db is created.
+That causes circular import errors.
+
+----------------------------------------
+2) First-time DB setup (after creating models)
+----------------------------------------
+Run from project root:
+
+python3 -c "from campusnote import app, db; app.app_context().push(); db.create_all()"
+
+This creates all tables for all models in models.py.
+
+Optional verification command:
+python3 -c "from campusnote import app, db; from sqlalchemy import inspect; app.app_context().push(); print(sorted(inspect(db.engine).get_table_names()))"
+
+----------------------------------------
+3) Safer startup pattern
+----------------------------------------
+In run.py, before app.run(...):
+- open app context
+- call db.create_all()
+
+This prevents "no such table" on first launch.
+
+----------------------------------------
+4) When you add a NEW model or NEW columns
+----------------------------------------
+If you are still using create_all only:
+- New tables are usually created.
+- Existing table schema changes (new columns, type changes) are NOT reliably migrated.
+
+So for quick beginner flow:
+- Stop server
+- Backup instance/site.db if needed
+- For development only, delete old DB and recreate:
+  rm -f instance/site.db
+  python3 -c "from campusnote import app, db; app.app_context().push(); db.create_all()"
+- Restart app: python3 run.py
+
+----------------------------------------
+5) If error appears again
+----------------------------------------
+Checklist:
+- Ensure server fully restarted (Ctrl+C, then python3 run.py)
+- Confirm DB file exists: instance/site.db
+- Confirm tables exist with inspect command above
+- Confirm SQLALCHEMY_DATABASE_URI still points to sqlite:///site.db
+- Confirm no early model import before db initialization in __init__.py
+
+----------------------------------------
+6) Recommended next upgrade (later)
+----------------------------------------
+Use Flask-Migrate/Alembic for real schema migrations.
+That is the proper long-term workflow once project grows.
