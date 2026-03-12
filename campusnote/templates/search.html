@@ -1,0 +1,98 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h2>Search Notes</h2>
+
+<form method="GET" action="{{ url_for('search') }}" style="margin-bottom: 16px;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; align-items: end;">
+        <div>
+            <label for="q">Keyword</label><br>
+            <input type="text" id="q" name="q" value="{{ q or '' }}" placeholder="e.g. Data Structures" style="width: 100%;">
+        </div>
+
+        <div>
+            <label for="uni">University</label><br>
+            <select name="uni" id="uni" style="width: 100%;">
+                <option value="">All</option>
+                {% for u in universities %}
+                    <option value="{{ u.id }}" {% if selected_uni == u.id %}selected{% endif %}>{{ u.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label for="dept">Department</label><br>
+            <select name="dept" id="dept" style="width: 100%;">
+                <option value="">All</option>
+                {% for d in departments %}
+                    <option value="{{ d.id }}" {% if selected_dept == d.id %}selected{% endif %}>{{ d.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label for="year">Year</label><br>
+            <select name="year" id="year" style="width: 100%;">
+                <option value="">All</option>
+                {% for y in years %}
+                    <option value="{{ y.id }}" {% if selected_year == y.id %}selected{% endif %}>{{ y.label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label for="sem">Semester</label><br>
+            <select name="sem" id="sem" style="width: 100%;">
+                <option value="">All</option>
+                {% for s in semesters %}
+                    <option value="{{ s.id }}" {% if selected_sem == s.id %}selected{% endif %}>{{ s.label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label for="sub">Subject</label><br>
+            <select name="sub" id="sub" style="width: 100%;">
+                <option value="">All</option>
+                {% for s in subjects %}
+                    <option value="{{ s.id }}" {% if selected_sub == s.id %}selected{% endif %}>{{ s.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <button type="submit" style="width: 100%;">Search</button>
+        </div>
+    </div>
+</form>
+
+{% if results is defined %}
+    <p><strong>{{ results|length }}</strong> result(s) found.</p>
+
+    {% if results %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px;">
+            {% for note in results %}
+                <div style="border: 1px solid #ddd; border-radius: 8px; padding: 12px;">
+                    <h4 style="margin: 0 0 8px 0;">{{ note.title }}</h4>
+
+                    <p style="margin: 0 0 6px 0;">
+                        {{ note.description[:120] ~ ('...' if note.description and note.description|length > 120 else '') if note.description else 'No description' }}
+                    </p>
+
+                    <p style="margin: 0 0 6px 0;"><strong>Subject:</strong> {{ note.subject.name }}</p>
+                    <p style="margin: 0 0 6px 0;"><strong>Semester:</strong> {{ note.subject.semester.label }}</p>
+                    <p style="margin: 0 0 6px 0;"><strong>Year:</strong> {{ note.subject.semester.year.label }}</p>
+                    <p style="margin: 0 0 6px 0;"><strong>Department:</strong> {{ note.subject.semester.year.department.name }}</p>
+                    <p style="margin: 0 0 6px 0;"><strong>University:</strong> {{ note.subject.semester.year.department.university.name }}</p>
+                    <p style="margin: 0 0 6px 0;"><strong>Uploader:</strong> {{ note.uploader.username }}</p>
+                    <p style="margin: 0 0 10px 0;"><strong>Uploaded:</strong> {{ note.uploaded_at.strftime('%Y-%m-%d') }}</p>
+
+                    <a href="{{ url_for('static', filename=note.file_path) }}" target="_blank">Open File</a>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No notes matched your query.</p>
+    {% endif %}
+{% endif %}
+{% endblock %}

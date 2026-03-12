@@ -13,24 +13,34 @@ class Department(db.Model):
     university_id = db.Column(db.Integer, db.ForeignKey('university.id'), nullable=False)
     years = db.relationship('Year', backref='department', lazy=True)
 
+    __table_args__ = (db.UniqueConstraint('name', 'university_id'),)
+
+
 class Year(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    label = db.Column(db.String(20), nullable=False)  # e.g. "2nd Year"
+    label = db.Column(db.String(20), nullable=False)
     department_id = db.Column(db.Integer, db.ForeignKey('department.id'), nullable=False)
     semesters = db.relationship('Semester', backref='year', lazy=True)
 
+    __table_args__ = (db.UniqueConstraint('label', 'department_id'),)
+
+
 class Semester(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    label = db.Column(db.String(20), nullable=False)  # e.g. "1st Semester"
+    label = db.Column(db.String(20), nullable=False)
     year_id = db.Column(db.Integer, db.ForeignKey('year.id'), nullable=False)
     subjects = db.relationship('Subject', backref='semester', lazy=True)
+
+    __table_args__ = (db.UniqueConstraint('label', 'year_id'),)
 
 
 class Subject(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)  # e.g. "Data Structures"
+    name = db.Column(db.String(100), nullable=False)
     semester_id = db.Column(db.Integer, db.ForeignKey('semester.id'), nullable=False)
     notes = db.relationship('Note', backref='subject', lazy=True)
+
+    __table_args__ = (db.UniqueConstraint('name', 'semester_id'),)
 
 
 class User(db.Model, UserMixin):
