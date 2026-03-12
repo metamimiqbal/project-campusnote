@@ -1,0 +1,48 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<fieldset>
+    <legend>Join Today</legend>
+    <form action="/register" method="post">
+        {{ form.hidden_tag() }}
+
+        <div class = "email-section">
+            {{form.email.label()}}
+            {% if form.email.errors %}
+                {% for error in form.email.errors %}
+                    <span>error</span>
+                {% endfor %}
+            {% else %}
+                {{ form.email() }}
+            {% endif %}
+        </div>
+        
+        <div class = "password-section">
+            {{form.password.label()}}
+            {% if form.password.errors %}
+                {% for error in form.password.errors %}
+                    <span>error</span>
+                {% endfor %}
+            {% else %}
+                {{ form.password() }}
+            {% endif %}
+        </div>
+
+        <div class = "remember_me">
+            {{form.remember()}}
+            {{form.remember.label()}}
+        </div>
+
+        <div class="submit-btn">
+            {{form.submit()}}
+        </div>
+
+        <div class="no-acc">
+            <small>Don't have an account? {{url_for('register')}} </small>
+        </div>
+    </form>
+</fieldset>
+
+
+
+{% endblock content %}

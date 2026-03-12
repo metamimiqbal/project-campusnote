@@ -1,0 +1,134 @@
+CampusNote — Project Roadmap
+
+## Phase 1: Setup
+
+1. Create a project folder called `campusnote`
+2. Open it in VS Code
+3. Open the terminal in VS Code and run:
+   ```
+   python -m venv venv
+   ```
+4. Activate the virtual environment:
+   - Windows: `venv\Scripts\activate`
+   - Mac/Linux: `source venv/bin/activate`
+5. Install required packages:
+   ```
+   pip install flask flask-sqlalchemy flask-login flask-wtf
+   ```
+6. Create this folder structure manually:
+   ```
+   campusnote/
+   ├── app/
+   │   ├── __init__.py
+   │   ├── models.py
+   │   ├── routes.py
+   │   ├── forms.py
+   │   ├── static/
+   │   │   └── uploads/
+   │   └── templates/
+   │       ├── base.html
+   │       ├── home.html
+   │       ├── register.html
+   │       ├── login.html
+   │       ├── upload_note.html
+   │       ├── browse.html
+   │       └── note.html
+   ├── run.py
+   └── config.py
+   ```
+
+---
+
+## Phase 2: Configuration & App Factory
+
+7. Write `config.py` — holds secret key, database URI, upload folder path
+8. Write `app/__init__.py` — creates the Flask app, connects SQLAlchemy, Flask-Login, and registers blueprints
+
+---
+
+## Phase 3: Database Models
+
+9. Write `app/models.py` with three classes:
+   - `User` — id, username, email, password (hashed), notes relationship
+   - `Note` — id, title, university, department, year, semester, subject, filename, date posted, user_id (foreign key)
+   - `Rating` — id, score, user_id (foreign key), note_id (foreign key)
+10. In terminal, open Python shell and create the database:
+    ```
+    from app import create_app, db
+    app = create_app()
+    with app.app_context():
+        db.create_all()
+    ```
+
+---
+
+## Phase 4: Authentication
+
+11. Write registration form in `forms.py` — username, email, password, confirm password fields with validators
+12. Write login form in `forms.py` — email, password, remember me
+13. Write register and login routes in `routes.py`:
+    - Register: validate form → hash password → save user to db → redirect to login
+    - Login: check email → check password hash → flask-login `login_user()` → redirect to home
+    - Logout: `logout_user()` → redirect to home
+14. Write `register.html` and `login.html` templates extending `base.html`
+15. Write `base.html` with Bootstrap navbar that shows login/logout links depending on `current_user`
+
+---
+
+## Phase 5: Note Upload
+
+16. Write note upload form in `forms.py` — title, university, department, year, semester, subject, file field
+17. Write upload route in `routes.py`:
+    - Require login (`@login_required`)
+    - Validate form
+    - Save file to `static/uploads/` with a safe unique filename
+    - Save note metadata to database
+    - Redirect to the note's page
+18. Write `upload_note.html` template with the form
+
+---
+
+## Phase 6: Browse & Search
+
+19. Write browse route — query all notes, pass them to template
+20. Write search route — take keyword from URL, filter notes by title or subject using `.filter()` or `.like()`
+21. Write `browse.html` — show notes in a table or cards, add a search bar at the top, add dropdown filters for department/subject
+
+---
+
+## Phase 7: Note Detail Page & Rating
+
+22. Write note detail route — fetch single note by id, fetch its ratings, calculate average
+23. Write rating form in `forms.py` — a score field (1 to 5)
+24. Write rating submission route:
+    - Check if user already rated (query Rating by user_id + note_id)
+    - If not, save rating to db
+    - Redirect back to note page
+25. Write `note.html` — show note title, metadata, download link, average rating, and rating form
+
+---
+
+## Phase 8: Polish & Test
+
+26. Add flash messages for all actions (registered, logged in, uploaded, rated, errors)
+27. Style everything using Bootstrap classes in your templates
+28. Test every feature manually:
+    - Register two different users
+    - Upload a note with one user
+    - Log in as the other and rate it
+    - Search for the note
+    - Try rating the same note twice (should be blocked)
+29. Make sure the app runs with `python run.py` with no errors
+
+---
+
+## Phase 9: Final Touches for Submission
+
+30. Write a short `README.md` explaining what the project is and how to run it
+31. Make sure `static/uploads/` is not empty (upload at least 2–3 sample notes for demo)
+32. Double check all pages load without errors
+33. Record your demo video (required for CS50 submission) showing: register → login → upload → browse → search → rate
+
+---
+
+**Start with Phase 1 today. Don't move to the next phase until the current one works.**
