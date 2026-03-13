@@ -12,6 +12,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Custom styles -->
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+    <script>
+        (function () {
+            try {
+                const savedTheme = localStorage.getItem('campusnote-theme');
+                if (savedTheme && savedTheme !== 'indigo-classic') {
+                    document.documentElement.setAttribute('data-theme', savedTheme);
+                }
+            } catch (err) {
+                // Ignore storage restrictions in private mode.
+            }
+        })();
+    </script>
 </head>
 <body>
 
@@ -37,6 +49,68 @@
                         <a class="nav-link" href="{{ url_for('search') }}">
                             <i class="bi bi-search me-1"></i>Search
                         </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <button class="btn nav-link dropdown-toggle cn-theme-toggle" type="button"
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-palette me-1"></i><span id="cnThemeLabel">Theme</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end cn-dropdown cn-theme-menu p-2">
+                            <li>
+                                <button type="button" class="dropdown-item cn-theme-option" data-theme="indigo-classic" data-theme-name="Indigo Classic">
+                                    <span class="cn-theme-samples" aria-hidden="true">
+                                        <span style="background:#4f46e5"></span><span style="background:#0d0d1a"></span><span style="background:#eef2ff"></span>
+                                    </span>
+                                    <span>Indigo Classic</span>
+                                    <i class="bi bi-check2 cn-theme-check" aria-hidden="true"></i>
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" class="dropdown-item cn-theme-option" data-theme="cyberpunk-grid" data-theme-name="Cyberpunk Grid">
+                                    <span class="cn-theme-samples" aria-hidden="true">
+                                        <span style="background:#00f0ff"></span><span style="background:#090413"></span><span style="background:#13172a"></span>
+                                    </span>
+                                    <span>Cyberpunk Grid</span>
+                                    <i class="bi bi-check2 cn-theme-check" aria-hidden="true"></i>
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" class="dropdown-item cn-theme-option" data-theme="crimson-dusk" data-theme-name="Crimson Dusk">
+                                    <span class="cn-theme-samples" aria-hidden="true">
+                                        <span style="background:#d7263d"></span><span style="background:#16090b"></span><span style="background:#24171a"></span>
+                                    </span>
+                                    <span>Crimson Dusk</span>
+                                    <i class="bi bi-check2 cn-theme-check" aria-hidden="true"></i>
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" class="dropdown-item cn-theme-option" data-theme="emerald-night" data-theme-name="Emerald Night">
+                                    <span class="cn-theme-samples" aria-hidden="true">
+                                        <span style="background:#1f9d7a"></span><span style="background:#061814"></span><span style="background:#102521"></span>
+                                    </span>
+                                    <span>Emerald Night</span>
+                                    <i class="bi bi-check2 cn-theme-check" aria-hidden="true"></i>
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" class="dropdown-item cn-theme-option" data-theme="copper-sand" data-theme-name="Copper Sand">
+                                    <span class="cn-theme-samples" aria-hidden="true">
+                                        <span style="background:#c66b2a"></span><span style="background:#1f1711"></span><span style="background:#2a2118"></span>
+                                    </span>
+                                    <span>Copper Sand</span>
+                                    <i class="bi bi-check2 cn-theme-check" aria-hidden="true"></i>
+                                </button>
+                            </li>
+                            <li>
+                                <button type="button" class="dropdown-item cn-theme-option" data-theme="sunrise-paper" data-theme-name="Sunrise Paper">
+                                    <span class="cn-theme-samples" aria-hidden="true">
+                                        <span style="background:#2e5bff"></span><span style="background:#f8fbff"></span><span style="background:#fff7ed"></span>
+                                    </span>
+                                    <span>Sunrise Paper</span>
+                                    <i class="bi bi-check2 cn-theme-check" aria-hidden="true"></i>
+                                </button>
+                            </li>
+                        </ul>
                     </li>
                     {% if current_user.is_authenticated %}
                         <li class="nav-item">
@@ -106,6 +180,55 @@
 
     <!-- Bootstrap JS bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        (function () {
+            const storageKey = 'campusnote-theme';
+            const fallbackTheme = 'indigo-classic';
+            const root = document.documentElement;
+            const themeLabel = document.getElementById('cnThemeLabel');
+            const themeButtons = document.querySelectorAll('.cn-theme-option');
+
+            function setTheme(themeName) {
+                if (!themeName || themeName === fallbackTheme) {
+                    root.removeAttribute('data-theme');
+                } else {
+                    root.setAttribute('data-theme', themeName);
+                }
+
+                try {
+                    localStorage.setItem(storageKey, themeName || fallbackTheme);
+                } catch (err) {
+                    // Continue without persistence if storage is unavailable.
+                }
+
+                themeButtons.forEach((button) => {
+                    const isActive = button.dataset.theme === themeName;
+                    button.classList.toggle('active', isActive);
+                });
+
+                const activeButton = document.querySelector('.cn-theme-option.active');
+                if (themeLabel && activeButton) {
+                    themeLabel.textContent = activeButton.dataset.themeName || 'Theme';
+                }
+            }
+
+            const storedTheme = (function () {
+                try {
+                    return localStorage.getItem(storageKey) || fallbackTheme;
+                } catch (err) {
+                    return fallbackTheme;
+                }
+            })();
+
+            setTheme(storedTheme);
+
+            themeButtons.forEach((button) => {
+                button.addEventListener('click', function () {
+                    setTheme(this.dataset.theme || fallbackTheme);
+                });
+            });
+        })();
+    </script>
     {% block scripts %}{% endblock %}
 
 </body>

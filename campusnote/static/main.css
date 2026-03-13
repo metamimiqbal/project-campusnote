@@ -27,6 +27,28 @@ body {
     background-color: var(--cn-bg);
     color: var(--cn-text);
     line-height: 1.6;
+    transition: background-color 0.28s ease, color 0.28s ease;
+}
+
+.cn-navbar,
+.cn-footer,
+.cn-card,
+.cn-note-card,
+.cn-form-card,
+.cn-step-card,
+.btn-primary,
+.btn-outline-primary,
+.btn-cn-primary,
+.dropdown-menu,
+.form-control,
+.form-select,
+.input-group-text,
+.alert {
+    transition: background-color 0.28s ease, color 0.28s ease, border-color 0.28s ease, box-shadow 0.28s ease;
+}
+
+.text-muted {
+    color: var(--cn-muted) !important;
 }
 
 a { color: var(--cn-primary); text-decoration: none; }
@@ -78,12 +100,94 @@ a:hover { color: var(--cn-primary-dark); }
     border-radius: var(--cn-radius);
     box-shadow: var(--cn-shadow);
     min-width: 170px;
+    background: var(--cn-card-bg);
+    color: var(--cn-text);
+}
+
+.cn-dropdown .dropdown-item {
+    color: var(--cn-text);
+}
+
+.cn-dropdown .dropdown-item:hover,
+.cn-dropdown .dropdown-item:focus {
+    color: var(--cn-text);
+    background: var(--cn-primary-light);
+}
+
+.cn-dropdown .dropdown-divider {
+    border-color: var(--cn-border);
 }
 
 .cn-navbar .navbar-toggler {
     border-color: rgba(255,255,255,0.2);
 }
 .cn-navbar .navbar-toggler-icon { filter: invert(1); }
+
+.cn-theme-toggle {
+    color: rgba(255,255,255,0.72) !important;
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 6px 10px !important;
+    border-radius: 6px;
+}
+
+.cn-theme-toggle:hover,
+.cn-theme-toggle:focus {
+    color: #ffffff !important;
+    background: rgba(255,255,255,0.07);
+}
+
+.cn-theme-menu {
+    min-width: 240px;
+    background: var(--cn-card-bg);
+}
+
+.cn-theme-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: 8px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    font-size: 0.85rem;
+}
+
+.cn-theme-option.active,
+.cn-theme-option:active {
+    background: var(--cn-primary-light);
+    color: var(--cn-text);
+}
+
+.cn-theme-option:hover,
+.cn-theme-option:focus {
+    background: color-mix(in srgb, var(--cn-primary-light) 70%, var(--cn-card-bg));
+    color: var(--cn-text);
+}
+
+.cn-theme-check {
+    margin-left: auto;
+    color: var(--cn-primary);
+    opacity: 0;
+    transform: scale(0.85);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.cn-theme-option.active .cn-theme-check {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.cn-theme-samples {
+    display: inline-flex;
+    gap: 5px;
+}
+
+.cn-theme-samples span {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.18);
+}
 
 /* ------ Buttons ------ */
 
@@ -325,3 +429,104 @@ a:hover { color: var(--cn-primary-dark); }
 }
 .cn-search-bar .input-group-text:first-child { border-radius: 8px 0 0 8px !important; }
 .cn-search-bar .btn { border-radius: 0 8px 8px 0 !important; }
+
+/* ------ Theme presets ------ */
+
+:root[data-theme='cyberpunk-grid'] {
+    --cn-primary:       #00f0ff;
+    --cn-primary-dark:  #00c3d6;
+    --cn-primary-light: #0f2530;
+    --cn-navbar-bg:     #090413;
+    --cn-bg:            #0c0f1f;
+    --cn-card-bg:       #13172a;
+    --cn-border:        #28304d;
+    --cn-text:          #e6f8ff;
+    --cn-muted:         #8ea3bd;
+    --cn-shadow-sm:     0 1px 4px rgba(0,0,0,0.35);
+    --cn-shadow:        0 4px 20px rgba(0,0,0,0.42);
+    --cn-shadow-hover:  0 8px 24px rgba(0,240,255,0.2);
+}
+
+:root[data-theme='crimson-dusk'] {
+    --cn-primary:       #d7263d;
+    --cn-primary-dark:  #ab1b30;
+    --cn-primary-light: #31141a;
+    --cn-navbar-bg:     #16090b;
+    --cn-bg:            #1b1114;
+    --cn-card-bg:       #24171a;
+    --cn-border:        #43262d;
+    --cn-text:          #f6ebed;
+    --cn-muted:         #baa0a8;
+    --cn-shadow-sm:     0 1px 4px rgba(0,0,0,0.34);
+    --cn-shadow:        0 4px 20px rgba(0,0,0,0.44);
+    --cn-shadow-hover:  0 8px 24px rgba(215,38,61,0.24);
+}
+
+:root[data-theme='emerald-night'] {
+    --cn-primary:       #1f9d7a;
+    --cn-primary-dark:  #17775d;
+    --cn-primary-light: #16332d;
+    --cn-navbar-bg:     #061814;
+    --cn-bg:            #0b1f1a;
+    --cn-card-bg:       #102521;
+    --cn-border:        #25463f;
+    --cn-text:          #ecf9f5;
+    --cn-muted:         #9cb9b0;
+    --cn-shadow-sm:     0 1px 4px rgba(0,0,0,0.3);
+    --cn-shadow:        0 4px 20px rgba(0,0,0,0.4);
+    --cn-shadow-hover:  0 8px 24px rgba(31,157,122,0.24);
+}
+
+:root[data-theme='copper-sand'] {
+    --cn-primary:       #c66b2a;
+    --cn-primary-dark:  #9f5420;
+    --cn-primary-light: #35261a;
+    --cn-navbar-bg:     #1f1711;
+    --cn-bg:            #241b14;
+    --cn-card-bg:       #2b2118;
+    --cn-border:        #4a3625;
+    --cn-text:          #f9f1ea;
+    --cn-muted:         #c4b09d;
+    --cn-shadow-sm:     0 1px 4px rgba(0,0,0,0.32);
+    --cn-shadow:        0 4px 20px rgba(0,0,0,0.42);
+    --cn-shadow-hover:  0 8px 24px rgba(198,107,42,0.24);
+}
+
+:root[data-theme='sunrise-paper'] {
+    --cn-primary:       #2e5bff;
+    --cn-primary-dark:  #2145cc;
+    --cn-primary-light: #e8efff;
+    --cn-navbar-bg:     #f8fbff;
+    --cn-bg:            #fff7ed;
+    --cn-card-bg:       #ffffff;
+    --cn-border:        #e5ddce;
+    --cn-text:          #2b2721;
+    --cn-muted:         #7b7265;
+    --cn-shadow-sm:     0 1px 4px rgba(46,91,255,0.08);
+    --cn-shadow:        0 4px 20px rgba(26,46,89,0.12);
+    --cn-shadow-hover:  0 8px 24px rgba(46,91,255,0.18);
+}
+
+:root[data-theme='sunrise-paper'] .cn-brand {
+    color: #1f2a44 !important;
+}
+
+:root[data-theme='sunrise-paper'] .cn-navbar .nav-link,
+:root[data-theme='sunrise-paper'] .cn-theme-toggle {
+    color: #49566f !important;
+}
+
+:root[data-theme='sunrise-paper'] .cn-navbar .nav-link:hover,
+:root[data-theme='sunrise-paper'] .cn-theme-toggle:hover,
+:root[data-theme='sunrise-paper'] .cn-theme-toggle:focus {
+    color: #1f2a44 !important;
+    background: rgba(46,91,255,0.12);
+}
+
+:root[data-theme='sunrise-paper'] .cn-navbar .navbar-toggler {
+    border-color: rgba(31,42,68,0.35);
+}
+
+:root[data-theme='sunrise-paper'] .cn-navbar .navbar-toggler-icon {
+    filter: none;
+}
