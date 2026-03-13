@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"{% set persisted_theme = request.cookies.get('campusnote-theme') %}{% if persisted_theme and persisted_theme != 'indigo-classic' %} data-theme="{{ persisted_theme }}"{% endif %}>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -200,6 +200,8 @@
                 } catch (err) {
                     // Continue without persistence if storage is unavailable.
                 }
+
+                document.cookie = 'campusnote-theme=' + encodeURIComponent(themeName || fallbackTheme) + '; path=/; max-age=31536000; samesite=lax';
 
                 themeButtons.forEach((button) => {
                     const isActive = button.dataset.theme === themeName;

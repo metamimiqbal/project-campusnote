@@ -16,6 +16,13 @@
     --cn-shadow-sm:     0 1px 4px rgba(0,0,0,0.28);
     --cn-shadow:        0 4px 20px rgba(0,0,0,0.38);
     --cn-shadow-hover:  0 8px 24px rgba(79,70,229,0.22);
+    --cn-brand-color:   #ffffff;
+    --cn-nav-link:      rgba(255,255,255,0.72);
+    --cn-nav-link-hover:#ffffff;
+    --cn-nav-hover-bg:  rgba(255,255,255,0.07);
+    --cn-navbar-border: rgba(255,255,255,0.05);
+    --cn-toggler-border:rgba(255,255,255,0.2);
+    --cn-toggler-filter:invert(1);
 }
 
 /* ------ Base ------ */
@@ -59,20 +66,20 @@ a:hover { color: var(--cn-primary-dark); }
 .cn-navbar {
     background-color: var(--cn-navbar-bg);
     padding: 10px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
+    border-bottom: 1px solid var(--cn-navbar-border);
 }
 
 .cn-brand {
     font-size: 1.2rem;
     font-weight: 700;
     letter-spacing: -0.02em;
-    color: #ffffff !important;
+    color: var(--cn-brand-color) !important;
 }
 
 .cn-brand-accent { color: var(--cn-primary) !important; }
 
 .cn-navbar .nav-link {
-    color: rgba(255,255,255,0.72) !important;
+    color: var(--cn-nav-link) !important;
     font-size: 0.875rem;
     font-weight: 500;
     padding: 6px 10px !important;
@@ -81,8 +88,8 @@ a:hover { color: var(--cn-primary-dark); }
 }
 
 .cn-navbar .nav-link:hover {
-    color: #ffffff !important;
-    background: rgba(255,255,255,0.07);
+    color: var(--cn-nav-link-hover) !important;
+    background: var(--cn-nav-hover-bg);
 }
 
 .cn-navbar .dropdown-toggle::after { vertical-align: middle; }
@@ -119,12 +126,12 @@ a:hover { color: var(--cn-primary-dark); }
 }
 
 .cn-navbar .navbar-toggler {
-    border-color: rgba(255,255,255,0.2);
+    border-color: var(--cn-toggler-border);
 }
-.cn-navbar .navbar-toggler-icon { filter: invert(1); }
+.cn-navbar .navbar-toggler-icon { filter: var(--cn-toggler-filter); }
 
 .cn-theme-toggle {
-    color: rgba(255,255,255,0.72) !important;
+    color: var(--cn-nav-link) !important;
     font-size: 0.875rem;
     font-weight: 500;
     padding: 6px 10px !important;
@@ -133,8 +140,8 @@ a:hover { color: var(--cn-primary-dark); }
 
 .cn-theme-toggle:hover,
 .cn-theme-toggle:focus {
-    color: #ffffff !important;
-    background: rgba(255,255,255,0.07);
+    color: var(--cn-nav-link-hover) !important;
+    background: var(--cn-nav-hover-bg);
 }
 
 .cn-theme-menu {
@@ -516,40 +523,23 @@ a:hover { color: var(--cn-primary-dark); }
 }
 
 :root[data-theme='sunrise-paper'] {
-    --cn-primary:       #2e5bff;
-    --cn-primary-dark:  #2145cc;
-    --cn-primary-light: #e8efff;
-    --cn-navbar-bg:     #f8fbff;
-    --cn-bg:            #fff7ed;
-    --cn-card-bg:       #ffffff;
-    --cn-border:        #e5ddce;
-    --cn-text:          #2b2721;
-    --cn-muted:         #7b7265;
-    --cn-shadow-sm:     0 1px 4px rgba(46,91,255,0.08);
-    --cn-shadow:        0 4px 20px rgba(26,46,89,0.12);
-    --cn-shadow-hover:  0 8px 24px rgba(46,91,255,0.18);
-}
-
-:root[data-theme='sunrise-paper'] .cn-brand {
-    color: #1f2a44 !important;
-}
-
-:root[data-theme='sunrise-paper'] .cn-navbar .nav-link,
-:root[data-theme='sunrise-paper'] .cn-theme-toggle {
-    color: #49566f !important;
-}
-
-:root[data-theme='sunrise-paper'] .cn-navbar .nav-link:hover,
-:root[data-theme='sunrise-paper'] .cn-theme-toggle:hover,
-:root[data-theme='sunrise-paper'] .cn-theme-toggle:focus {
-    color: #1f2a44 !important;
-    background: rgba(46,91,255,0.12);
-}
-
-:root[data-theme='sunrise-paper'] .cn-navbar .navbar-toggler {
-    border-color: rgba(31,42,68,0.35);
-}
-
-:root[data-theme='sunrise-paper'] .cn-navbar .navbar-toggler-icon {
-    filter: none;
+    --cn-primary:        #2f58e8;
+    --cn-primary-dark:   #2143b5;
+    --cn-primary-light:  #e9efff;
+    --cn-navbar-bg:      #e7eaef;
+    --cn-bg:             #efe9df;
+    --cn-card-bg:        #f7f7f8;
+    --cn-border:         #d7d2c9;
+    --cn-text:           #2b2f35;
+    --cn-muted:          #6c7280;
+    --cn-shadow-sm:      0 1px 4px rgba(43,47,53,0.08);
+    --cn-shadow:         0 4px 20px rgba(43,47,53,0.12);
+    --cn-shadow-hover:   0 8px 24px rgba(47,88,232,0.18);
+    --cn-brand-color:    #263755;
+    --cn-nav-link:       #556078;
+    --cn-nav-link-hover: #263755;
+    --cn-nav-hover-bg:   rgba(47,88,232,0.11);
+    --cn-navbar-border:  rgba(38,55,85,0.14);
+    --cn-toggler-border: rgba(38,55,85,0.38);
+    --cn-toggler-filter: none;
 }
