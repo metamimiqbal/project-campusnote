@@ -1,98 +1,128 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<h2>Search Notes</h2>
+<div class="container cn-page-shell">
 
-<form method="GET" action="{{ url_for('search') }}" style="margin-bottom: 16px;">
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; align-items: end;">
-        <div>
-            <label for="q">Keyword</label><br>
-            <input type="text" id="q" name="q" value="{{ q or '' }}" placeholder="e.g. Data Structures" style="width: 100%;">
-        </div>
-
-        <div>
-            <label for="uni">University</label><br>
-            <select name="uni" id="uni" style="width: 100%;">
-                <option value="">All</option>
-                {% for u in universities %}
-                    <option value="{{ u.id }}" {% if selected_uni == u.id %}selected{% endif %}>{{ u.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div>
-            <label for="dept">Department</label><br>
-            <select name="dept" id="dept" style="width: 100%;">
-                <option value="">All</option>
-                {% for d in departments %}
-                    <option value="{{ d.id }}" {% if selected_dept == d.id %}selected{% endif %}>{{ d.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div>
-            <label for="year">Year</label><br>
-            <select name="year" id="year" style="width: 100%;">
-                <option value="">All</option>
-                {% for y in years %}
-                    <option value="{{ y.id }}" {% if selected_year == y.id %}selected{% endif %}>{{ y.label }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div>
-            <label for="sem">Semester</label><br>
-            <select name="sem" id="sem" style="width: 100%;">
-                <option value="">All</option>
-                {% for s in semesters %}
-                    <option value="{{ s.id }}" {% if selected_sem == s.id %}selected{% endif %}>{{ s.label }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div>
-            <label for="sub">Subject</label><br>
-            <select name="sub" id="sub" style="width: 100%;">
-                <option value="">All</option>
-                {% for s in subjects %}
-                    <option value="{{ s.id }}" {% if selected_sub == s.id %}selected{% endif %}>{{ s.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div>
-            <button type="submit" style="width: 100%;">Search</button>
-        </div>
+    <div class="mb-4 cn-page-head">
+        <h2 class="fw-bold mb-1">Search Notes</h2>
+        <p class="text-muted mb-0">Find notes by keyword, then narrow down with filters.</p>
     </div>
-</form>
 
-{% if results is defined %}
-    <p><strong>{{ results|length }}</strong> result(s) found.</p>
+    <form method="GET" action="{{ url_for('search') }}">
+        <div class="input-group input-group-lg mb-3 cn-search-bar cn-center-block" style="max-width:640px;">
+            <span class="input-group-text"><i class="bi bi-search text-muted"></i></span>
+            <input type="text" name="q" class="form-control"
+                   id="q" value="{{ q or '' }}" placeholder="e.g. Data Structure, Circuit Analysis">
+            <button class="btn btn-primary px-4" type="submit">Search</button>
+        </div>
+
+        <div class="mb-4 cn-page-head" style="max-width:960px;">
+            <button class="btn btn-sm btn-outline-secondary mb-2" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#searchFilters" aria-expanded="false"
+                    aria-controls="searchFilters">
+                <i class="bi bi-sliders me-1"></i>Filters
+                {% if selected_uni or selected_dept or selected_year or selected_sem or selected_sub %}
+                    <span class="badge text-bg-primary ms-1">Active</span>
+                {% endif %}
+            </button>
+            <div class="collapse {% if selected_uni or selected_dept or selected_year or selected_sem or selected_sub %}show{% endif %}"
+                 id="searchFilters">
+                <div class="row g-2 pt-1">
+                    <div class="col-sm-6 col-md-4 col-lg-2">
+                        <label class="cn-section-label mb-1" for="uni">University</label>
+                        <select name="uni" id="uni" class="form-select form-select-sm">
+                            <option value="">All</option>
+                            {% for u in universities %}
+                                <option value="{{ u.id }}" {% if selected_uni == u.id %}selected{% endif %}>{{ u.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-sm-6 col-md-4 col-lg-2">
+                        <label class="cn-section-label mb-1" for="dept">Department</label>
+                        <select name="dept" id="dept" class="form-select form-select-sm">
+                            <option value="">All</option>
+                            {% for d in departments %}
+                                <option value="{{ d.id }}" {% if selected_dept == d.id %}selected{% endif %}>{{ d.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-sm-6 col-md-4 col-lg-2">
+                        <label class="cn-section-label mb-1" for="year">Year</label>
+                        <select name="year" id="year" class="form-select form-select-sm">
+                            <option value="">All</option>
+                            {% for y in years %}
+                                <option value="{{ y.id }}" {% if selected_year == y.id %}selected{% endif %}>{{ y.label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-sm-6 col-md-4 col-lg-2">
+                        <label class="cn-section-label mb-1" for="sem">Semester</label>
+                        <select name="sem" id="sem" class="form-select form-select-sm">
+                            <option value="">All</option>
+                            {% for s in semesters %}
+                                <option value="{{ s.id }}" {% if selected_sem == s.id %}selected{% endif %}>{{ s.label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-sm-6 col-md-4 col-lg-2">
+                        <label class="cn-section-label mb-1" for="sub">Subject</label>
+                        <select name="sub" id="sub" class="form-select form-select-sm">
+                            <option value="">All</option>
+                            {% for s in subjects %}
+                                <option value="{{ s.id }}" {% if selected_sub == s.id %}selected{% endif %}>{{ s.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-sm-6 col-md-4 col-lg-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary btn-sm w-100">Apply</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <span class="cn-section-label text-center mb-4">
+        {{ results|length }} result{{ 's' if results|length != 1 else '' }} found
+        {% if q %} for "{{ q }}"{% endif %}
+    </span>
 
     {% if results %}
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px;">
+        <div class="row g-3 cn-center-grid">
             {% for note in results %}
-                <div style="border: 1px solid #ddd; border-radius: 8px; padding: 12px;">
-                    <h4 style="margin: 0 0 8px 0;">{{ note.title }}</h4>
-
-                    <p style="margin: 0 0 6px 0;">
-                        {{ note.description[:120] ~ ('...' if note.description and note.description|length > 120 else '') if note.description else 'No description' }}
-                    </p>
-
-                    <p style="margin: 0 0 6px 0;"><strong>Subject:</strong> {{ note.subject.name }}</p>
-                    <p style="margin: 0 0 6px 0;"><strong>Semester:</strong> {{ note.subject.semester.label }}</p>
-                    <p style="margin: 0 0 6px 0;"><strong>Year:</strong> {{ note.subject.semester.year.label }}</p>
-                    <p style="margin: 0 0 6px 0;"><strong>Department:</strong> {{ note.subject.semester.year.department.name }}</p>
-                    <p style="margin: 0 0 6px 0;"><strong>University:</strong> {{ note.subject.semester.year.department.university.name }}</p>
-                    <p style="margin: 0 0 6px 0;"><strong>Uploader:</strong> {{ note.uploader.username }}</p>
-                    <p style="margin: 0 0 10px 0;"><strong>Uploaded:</strong> {{ note.uploaded_at.strftime('%Y-%m-%d') }}</p>
-
-                    <a href="{{ url_for('static', filename=note.file_path) }}" target="_blank">Open File</a>
+            <div class="col-sm-6 col-lg-4">
+                <div class="cn-note-card h-100">
+                    <div>
+                        <div class="cn-note-title">{{ note.title }}</div>
+                        <p class="cn-note-meta mt-1 mb-0">{{ note.description or 'No description provided.' }}</p>
+                    </div>
+                    <div class="mt-auto pt-2 border-top">
+                        <div class="cn-note-meta d-flex justify-content-between">
+                            <span><i class="bi bi-book me-1"></i>{{ note.subject.name }}</span>
+                            <span><i class="bi bi-calendar3 me-1"></i>{{ note.uploaded_at.strftime('%b %d, %Y') }}</span>
+                        </div>
+                        <div class="cn-note-meta mt-1">
+                            <i class="bi bi-person me-1"></i>{{ note.uploader.username }}
+                        </div>
+                        <a href="{{ url_for('static', filename=note.file_path) }}" target="_blank"
+                           class="btn btn-outline-primary btn-sm w-100 mt-2">
+                            <i class="bi bi-file-earmark-arrow-down me-1"></i>Open File
+                        </a>
+                    </div>
                 </div>
+            </div>
             {% endfor %}
         </div>
     {% else %}
-        <p>No notes matched your query.</p>
+        <div class="text-center py-5 text-muted">
+            <i class="bi bi-search fs-2 d-block mb-2"></i>
+            No notes matched your search.
+        </div>
     {% endif %}
-{% endif %}
+
+</div>
 {% endblock %}

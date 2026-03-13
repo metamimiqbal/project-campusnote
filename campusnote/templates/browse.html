@@ -1,91 +1,173 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<h2>Browse Notes</h2>
+<div class="container cn-page-shell">
 
-<div style="margin-bottom: 14px;">
-    <strong>Path:</strong>
-    <a href="{{ url_for('browse') }}">Universities</a>
-    {% if selected_uni %} &gt; <a href="{{ url_for('browse', uni=selected_uni) }}">Departments</a>{% endif %}
-    {% if selected_dept %} &gt; <a href="{{ url_for('browse', uni=selected_uni, dept=selected_dept) }}">Years</a>{% endif %}
-    {% if selected_year %} &gt; <a href="{{ url_for('browse', uni=selected_uni, dept=selected_dept, year=selected_year) }}">Semesters</a>{% endif %}
-    {% if selected_sem %} &gt; <a href="{{ url_for('browse', uni=selected_uni, dept=selected_dept, year=selected_year, sem=selected_sem) }}">Subjects</a>{% endif %}
-    {% if selected_sub %} &gt; Notes{% endif %}
-</div>
-
-{% if universities %}
-    <h3>Select University</h3>
-    <ul>
-        {% for item in universities %}
-            <li>
-                <a href="{{ url_for('browse', uni=item.id) }}">{{ item.name }}</a>
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb cn-breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{{ url_for('browse') }}"><i class="bi bi-house-door me-1"></i>Universities</a>
             </li>
-        {% endfor %}
-    </ul>
-{% endif %}
-
-{% if departments %}
-    <h3>Select Department</h3>
-    <ul>
-        {% for item in departments %}
-            <li>
-                <a href="{{ url_for('browse', uni=selected_uni, dept=item.id) }}">{{ item.name }}</a>
+            {% if selected_uni %}
+            <li class="breadcrumb-item {% if not selected_dept %}active{% endif %}">
+                {% if selected_dept %}
+                    <a href="{{ url_for('browse', uni=selected_uni) }}">{{ uni_name }}</a>
+                {% else %}{{ uni_name }}{% endif %}
             </li>
-        {% endfor %}
-    </ul>
-{% endif %}
-
-{% if years %}
-    <h3>Select Year</h3>
-    <ul>
-        {% for item in years %}
-            <li>
-                <a href="{{ url_for('browse', uni=selected_uni, dept=selected_dept, year=item.id) }}">{{ item.label }}</a>
+            {% endif %}
+            {% if selected_dept %}
+            <li class="breadcrumb-item {% if not selected_year %}active{% endif %}">
+                {% if selected_year %}
+                    <a href="{{ url_for('browse', uni=selected_uni, dept=selected_dept) }}">{{ dept_name }}</a>
+                {% else %}{{ dept_name }}{% endif %}
             </li>
-        {% endfor %}
-    </ul>
-{% endif %}
-
-{% if semesters %}
-    <h3>Select Semester</h3>
-    <ul>
-        {% for item in semesters %}
-            <li>
-                <a href="{{ url_for('browse', uni=selected_uni, dept=selected_dept, year=selected_year, sem=item.id) }}">{{ item.label }}</a>
+            {% endif %}
+            {% if selected_year %}
+            <li class="breadcrumb-item {% if not selected_sem %}active{% endif %}">
+                {% if selected_sem %}
+                    <a href="{{ url_for('browse', uni=selected_uni, dept=selected_dept, year=selected_year) }}">{{ year_name }}</a>
+                {% else %}{{ year_name }}{% endif %}
             </li>
-        {% endfor %}
-    </ul>
-{% endif %}
-
-{% if subjects %}
-    <h3>Select Subject</h3>
-    <ul>
-        {% for item in subjects %}
-            <li>
-                <a href="{{ url_for('browse', uni=selected_uni, dept=selected_dept, year=selected_year, sem=selected_sem, sub=item.id) }}">{{ item.name }}</a>
+            {% endif %}
+            {% if selected_sem %}
+            <li class="breadcrumb-item {% if not selected_sub %}active{% endif %}">
+                {% if selected_sub %}
+                    <a href="{{ url_for('browse', uni=selected_uni, dept=selected_dept, year=selected_year, sem=selected_sem) }}">{{ sem_name }}</a>
+                {% else %}{{ sem_name }}{% endif %}
             </li>
-        {% endfor %}
-    </ul>
-{% endif %}
+            {% endif %}
+            {% if selected_sub %}
+            <li class="breadcrumb-item active">{{ sub_name }}</li>
+            {% endif %}
+        </ol>
+    </nav>
 
-{% if notes is not none %}
-    <h3>Notes</h3>
-
-    {% if notes %}
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px;">
-            {% for note in notes %}
-                <div style="border: 1px solid #ddd; border-radius: 8px; padding: 12px;">
-                    <h4 style="margin: 0 0 8px 0;">{{ note.title }}</h4>
-                    <p style="margin: 0 0 8px 0;">{{ note.description or "No description" }}</p>
-                    <p style="margin: 0 0 6px 0;"><strong>Uploader:</strong> {{ note.uploader.username }}</p>
-                    <p style="margin: 0 0 6px 0;"><strong>Uploaded:</strong> {{ note.uploaded_at.strftime('%Y-%m-%d') }}</p>
-                    <a href="{{ url_for('static', filename=note.file_path) }}" target="_blank">Open File</a>
-                </div>
+    <!-- Universities -->
+    {% if universities %}
+        <span class="cn-section-label text-center">Select a University to get started</span>
+        <div class="row g-2 cn-center-grid">
+            {% for item in universities %}
+            <div class="col-12 col-md-6">
+                <a href="{{ url_for('browse', uni=item.id) }}" class="cn-step-card">
+                    <span><i class="bi bi-building me-2 text-muted"></i>{{ item.name }}</span>
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </div>
+            {% else %}
+            <div class="col-12 text-center py-5 text-muted">
+                <i class="bi bi-database-x fs-2 d-block mb-2"></i>
+                No universities in the database yet.
+            </div>
             {% endfor %}
         </div>
-    {% else %}
-        <p>No notes uploaded yet for this subject.</p>
     {% endif %}
-{% endif %}
+
+    <!-- Departments -->
+    {% if departments %}
+        <span class="cn-section-label text-center">Choose a Department &mdash; {{ uni_name }}</span>
+        <div class="row g-2 cn-center-grid">
+            {% for item in departments %}
+            <div class="col-12 col-md-6">
+                <a href="{{ url_for('browse', uni=selected_uni, dept=item.id) }}" class="cn-step-card">
+                    <span><i class="bi bi-journal-bookmark me-2 text-muted"></i>{{ item.name }}</span>
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Years -->
+    {% if years %}
+        <span class="cn-section-label text-center">Select Year &mdash; {{ dept_name }}</span>
+        <div class="row g-2 cn-center-grid">
+            {% for item in years %}
+            <div class="col-12 col-sm-6 col-md-4">
+                <a href="{{ url_for('browse', uni=selected_uni, dept=selected_dept, year=item.id) }}" class="cn-step-card">
+                    <span><i class="bi bi-calendar3 me-2 text-muted"></i>{{ item.label }}</span>
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Semesters -->
+    {% if semesters %}
+        <span class="cn-section-label text-center">Select Semester &mdash; {{ year_name }}</span>
+        <div class="row g-2 cn-center-grid">
+            {% for item in semesters %}
+            <div class="col-12 col-sm-6 col-md-4">
+                <a href="{{ url_for('browse', uni=selected_uni, dept=selected_dept, year=selected_year, sem=item.id) }}" class="cn-step-card">
+                    <span><i class="bi bi-bookmark me-2 text-muted"></i>{{ item.label }}</span>
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Subjects -->
+    {% if subjects %}
+        <span class="cn-section-label text-center">Select Subject &mdash; {{ sem_name }}</span>
+        <div class="row g-2 cn-center-grid">
+            {% for item in subjects %}
+            <div class="col-12 col-sm-6 col-md-4">
+                <a href="{{ url_for('browse', uni=selected_uni, dept=selected_dept, year=selected_year, sem=selected_sem, sub=item.id) }}" class="cn-step-card">
+                    <span><i class="bi bi-book me-2 text-muted"></i>{{ item.name }}</span>
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Notes -->
+    {% if notes is not none %}
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <span class="cn-section-label mb-0">Notes &mdash; {{ sub_name }}</span>
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for('upload') }}" class="btn btn-cn-primary btn-sm">
+                <i class="bi bi-upload me-1"></i>Upload a Note
+            </a>
+            {% endif %}
+        </div>
+
+        {% if notes %}
+        <div class="row g-3 cn-center-grid">
+            {% for note in notes %}
+            <div class="col-sm-6 col-lg-4">
+                <div class="cn-note-card h-100">
+                    <div>
+                        <div class="cn-note-title">{{ note.title }}</div>
+                        <p class="cn-note-meta mt-1 mb-0">{{ note.description or 'No description provided.' }}</p>
+                    </div>
+                    <div class="mt-auto pt-2 border-top">
+                        <div class="cn-note-meta d-flex justify-content-between">
+                            <span><i class="bi bi-person me-1"></i>{{ note.uploader.username }}</span>
+                            <span><i class="bi bi-calendar3 me-1"></i>{{ note.uploaded_at.strftime('%b %d, %Y') }}</span>
+                        </div>
+                        <a href="{{ url_for('static', filename=note.file_path) }}" target="_blank"
+                           class="btn btn-outline-primary btn-sm w-100 mt-2">
+                            <i class="bi bi-file-earmark-arrow-down me-1"></i>Open File
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-5 text-muted">
+            <i class="bi bi-journal-x fs-2 d-block mb-2"></i>
+            No notes uploaded yet for this subject.
+            {% if current_user.is_authenticated %}
+            <div class="mt-2"><a href="{{ url_for('upload') }}">Upload the first one!</a></div>
+            {% endif %}
+        </div>
+        {% endif %}
+    {% endif %}
+
+</div>
 
 {% endblock %}

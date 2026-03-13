@@ -1,6 +1,162 @@
 {% extends "layout.html" %}
 
 {% block content %}
-    <h1>Welcome To Campus Note</h1>
+{% if current_user.is_authenticated %}
+    <!-- ===== Dashboard (logged in) ===== -->
+    <div class="container cn-page-shell">
 
+        <div class="mb-4 text-center">
+            <h2 class="fw-bold mb-1">Welcome back, {{ current_user.username }} 👋</h2>
+            <p class="text-muted mb-0">What are you studying today?</p>
+        </div>
+
+        <!-- Quick search -->
+        <form action="{{ url_for('search') }}" method="GET" class="mb-5 cn-search-bar cn-center-block" style="max-width:600px;">
+            <div class="input-group input-group-lg">
+                <span class="input-group-text"><i class="bi bi-search text-muted"></i></span>
+                <input type="text" name="q" class="form-control"
+                       placeholder="Search notes, topics, subjects…">
+                <button class="btn btn-primary px-4" type="submit">Search</button>
+            </div>
+        </form>
+
+        <!-- Quick links row -->
+        <div class="row g-3 mb-5">
+            <div class="col-sm-6 col-lg-4">
+                <a href="{{ url_for('browse') }}" class="cn-card d-flex align-items-center gap-3 p-3 text-decoration-none">
+                    <div class="cn-icon-bubble">
+                        <i class="bi bi-compass fs-4" style="color:var(--cn-primary)"></i>
+                    </div>
+                    <div>
+                        <div class="fw-semibold">Browse Notes</div>
+                        <small class="text-muted">University → Subject hierarchy</small>
+                    </div>
+                </a>
+            </div>
+            <div class="col-sm-6 col-lg-4">
+                <a href="{{ url_for('upload') }}" class="cn-card d-flex align-items-center gap-3 p-3 text-decoration-none">
+                    <div class="cn-icon-bubble">
+                        <i class="bi bi-upload fs-4" style="color:var(--cn-primary)"></i>
+                    </div>
+                    <div>
+                        <div class="fw-semibold">Upload a Note</div>
+                        <small class="text-muted">Share your notes with peers</small>
+                    </div>
+                </a>
+            </div>
+            <div class="col-sm-6 col-lg-4">
+                <a href="{{ url_for('account') }}" class="cn-card d-flex align-items-center gap-3 p-3 text-decoration-none">
+                    <div class="cn-icon-bubble">
+                        <i class="bi bi-person-circle fs-4" style="color:var(--cn-primary)"></i>
+                    </div>
+                    <div>
+                        <div class="fw-semibold">My Account</div>
+                        <small class="text-muted">Profile &amp; uploaded notes</small>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Recent notes feed -->
+        {% if recent_notes %}
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <span class="cn-section-label mb-0">Recently Uploaded</span>
+                <a href="{{ url_for('browse') }}" class="small text-muted">Explore all →</a>
+            </div>
+            <div class="row g-3 cn-center-grid">
+                {% for note in recent_notes %}
+                <div class="col-sm-6 col-lg-3">
+                    <div class="cn-note-card h-100">
+                        <div class="cn-note-title">{{ note.title }}</div>
+                        <p class="cn-note-meta mb-0">
+                            {{ (note.description or '')[:80] }}{% if note.description and note.description|length > 80 %}…{% endif %}
+                        </p>
+                        <div class="mt-auto pt-2 border-top">
+                            <div class="cn-note-meta d-flex justify-content-between">
+                                <span><i class="bi bi-person me-1"></i>{{ note.uploader.username }}</span>
+                                <span><i class="bi bi-calendar3 me-1"></i>{{ note.uploaded_at.strftime('%b %d') }}</span>
+                            </div>
+                            <a href="{{ url_for('static', filename=note.file_path) }}" target="_blank"
+                               class="btn btn-outline-primary btn-sm w-100 mt-2">
+                                <i class="bi bi-file-earmark-arrow-down me-1"></i>Open
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-journal-x fs-2 d-block mb-2"></i>
+                No notes uploaded yet.
+                <div class="mt-2"><a href="{{ url_for('upload') }}">Be the first to upload!</a></div>
+            </div>
+        {% endif %}
+
+    </div>
+
+{% else %}
+
+    <!-- ===== Landing page (logged out) ===== -->
+    <div class="container cn-page-shell">
+
+        <div class="cn-hero">
+            <span class="cn-section-label">Open Academic Resource Platform</span>
+            <h1>Your Campus.<br>Your Notes.<br>
+                <span style="color:var(--cn-primary)">Your Community.</span>
+            </h1>
+            <p class="lead">
+                CampusNote is a structured student platform for sharing and discovering academic notes
+                organised by University, Department, Year, Semester, and Subject.
+            </p>
+            <div class="d-flex gap-3 justify-content-center flex-wrap">
+                <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg px-5">Get Started Free</a>
+                <a href="{{ url_for('browse') }}"   class="btn btn-outline-secondary btn-lg px-5">Browse Notes</a>
+            </div>
+        </div>
+
+        <!-- Feature cards -->
+        <div class="row g-4 pb-5">
+            <div class="col-md-4">
+                <div class="cn-card p-4 h-100">
+                    <div class="mb-3">
+                        <i class="bi bi-diagram-3 fs-2" style="color:var(--cn-primary)"></i>
+                    </div>
+                    <h5 class="fw-semibold">Structured Hierarchy</h5>
+                    <p class="text-muted mb-0">
+                        Notes organised by University → Department → Year → Semester → Subject.
+                        Find exactly what you need without noise.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="cn-card p-4 h-100">
+                    <div class="mb-3">
+                        <i class="bi bi-search fs-2" style="color:var(--cn-primary)"></i>
+                    </div>
+                    <h5 class="fw-semibold">Instant Search</h5>
+                    <p class="text-muted mb-0">
+                        Search any keyword — topic, subject, or concept — and get results in milliseconds,
+                        with optional filters to narrow them down.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="cn-card p-4 h-100">
+                    <div class="mb-3">
+                        <i class="bi bi-people fs-2" style="color:var(--cn-primary)"></i>
+                    </div>
+                    <h5 class="fw-semibold">Student-Driven</h5>
+                    <p class="text-muted mb-0">
+                        Upload your notes, help your peers, and benefit from the collective knowledge
+                        of students across every department.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+{% endif %}
 {% endblock %}
+

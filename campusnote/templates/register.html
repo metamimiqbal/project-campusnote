@@ -1,64 +1,57 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-<fieldset>
-    <legend>Join Today</legend>
-    <form action="/register" method="post">
-        {{ form.hidden_tag() }}
-        <div class = "username-section">
-            {{form.username.label()}}
-            {% if form.username.errors %}
-                {% for error in form.username.errors %}
-                    <span>{{error}}</span>
-                {% endfor %}
-            {% else %}
-                {{ form.username() }}
-            {% endif %}
-        </div>
-        
-        <div class = "email-section">
-            {{form.email.label()}}
-            {% if form.email.errors %}
-                {% for error in form.email.errors %}
-                    <span>{{error}}</span>
-                {% endfor %}
-            {% else %}
-                {{ form.email() }}
-            {% endif %}
-        </div>
-        
-        <div class = "password-section">
-            {{form.password.label()}}
-            {% if form.password.errors %}
-                {% for error in form.password.errors %}
-                    <span>{{error}}</span>
-                {% endfor %}
-            {% else %}
-                {{ form.password() }}
-            {% endif %}
-        </div>
+<div class="container cn-page-shell">
+    <div class="cn-form-wrap py-3">
+        <div class="cn-form-card">
 
-        <div class = "confirm_password-section">
-            {{form.confirm_password.label()}}
-            {% if form.confirm_password.errors %}
-                {% for error in form.confirm_password.errors %}
-                    <span>{{error}}</span>
-                {% endfor %}
-            {% else %}
-                {{ form.confirm_password() }}
-            {% endif %}
+            <h2 class="fw-bold text-center mb-1" style="letter-spacing:-0.02em">Create account</h2>
+            <p class="text-muted text-center mb-4 small">Join CampusNote — it's free.</p>
+
+            <form action="{{ url_for('register') }}" method="POST">
+                {{ form.hidden_tag() }}
+
+                <div class="mb-3">
+                    {{ form.username.label(class='form-label fw-medium') }}
+                    {{ form.username(class='form-control' + (' is-invalid' if form.username.errors else ''), placeholder='e.g. nova_cseb') }}
+                    {% for error in form.username.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.email.label(class='form-label fw-medium') }}
+                    {{ form.email(class='form-control' + (' is-invalid' if form.email.errors else ''), placeholder='you@example.com') }}
+                    {% for error in form.email.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.password.label(class='form-label fw-medium') }}
+                    {{ form.password(class='form-control' + (' is-invalid' if form.password.errors else ''), placeholder='Create a strong password') }}
+                    {% for error in form.password.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="mb-4">
+                    {{ form.confirm_password.label(class='form-label fw-medium') }}
+                    {{ form.confirm_password(class='form-control' + (' is-invalid' if form.confirm_password.errors else ''), placeholder='Repeat your password') }}
+                    {% for error in form.confirm_password.errors %}
+                        <div class="invalid-feedback">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                {{ form.submit(class='btn btn-primary w-100 py-2 fw-medium') }}
+            </form>
+
+            <hr class="my-4">
+            <p class="text-center text-muted mb-0 small">
+                Already have an account? <a href="{{ url_for('login') }}" class="fw-medium">Sign in</a>
+            </p>
+
         </div>
-
-        <div class="submit-btn">
-            {{form.submit()}}
-        </div>
-
-        <div class="already-acc">
-            <small>Already have an account? {{url_for('login')}} </small>
-        </div>
-    </form>
-</fieldset>
-
-
-
-{% endblock content %}
+    </div>
+</div>
+{% endblock %}

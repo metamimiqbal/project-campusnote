@@ -1,20 +1,121 @@
 {% extends "layout.html" %}
 {% block content %}
-<h2>Upload Note</h2>
+<div class="container cn-page-shell">
+    <div style="max-width:640px; margin:0 auto;">
 
-<form method="POST" enctype="multipart/form-data">
-    {{ form.hidden_tag() }}
+        <div class="mb-4">
+            <h2 class="fw-bold mb-1">Upload a Note</h2>
+            <p class="text-muted mb-0">Share your academic notes with the community.</p>
+        </div>
 
-    <p>{{ form.title.label }}<br>{{ form.title(size=60) }}</p>
-    <p>{{ form.description.label }}<br>{{ form.description(rows=4, cols=60) }}</p>
+        <div class="cn-form-card" style="max-width:640px;">
+            <form method="POST" enctype="multipart/form-data">
+                {{ form.hidden_tag() }}
 
-    <p>{{ form.university_id.label }}<br>{{ form.university_id() }}</p>
-    <p>{{ form.department_id.label }}<br>{{ form.department_id() }}</p>
-    <p>{{ form.year_id.label }}<br>{{ form.year_id() }}</p>
-    <p>{{ form.semester_id.label }}<br>{{ form.semester_id() }}</p>
-    <p>{{ form.subject_id.label }}<br>{{ form.subject_id() }}</p>
+                <div class="mb-3">
+                    {{ form.title.label(class='form-label fw-medium') }}
+                    {{ form.title(class='form-control' + (' is-invalid' if form.title.errors else ''), placeholder='e.g. Data Structures – Lecture 5') }}
+                    {% for e in form.title.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                </div>
 
-    <p>{{ form.note_file.label }}<br>{{ form.note_file() }}</p>
-    <p>{{ form.submit() }}</p>
-</form>
+                <div class="mb-4">
+                    {{ form.description.label(class='form-label fw-medium') }}
+                    {{ form.description(class='form-control' + (' is-invalid' if form.description.errors else ''), rows=3, placeholder='Brief description (optional)') }}
+                    {% for e in form.description.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                </div>
+
+                <span class="cn-section-label">Academic Hierarchy</span>
+                <p class="text-muted small mb-3">Select top-to-bottom — each dropdown updates automatically.</p>
+
+                <div class="mb-3">
+                    {{ form.university_id.label(class='form-label fw-medium') }}
+                    {{ form.university_id(id='university_id', class='form-select' + (' is-invalid' if form.university_id.errors else '')) }}
+                    {% for e in form.university_id.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.department_id.label(class='form-label fw-medium') }}
+                    {{ form.department_id(id='department_id', class='form-select' + (' is-invalid' if form.department_id.errors else '')) }}
+                    {% for e in form.department_id.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.year_id.label(class='form-label fw-medium') }}
+                    {{ form.year_id(id='year_id', class='form-select' + (' is-invalid' if form.year_id.errors else '')) }}
+                    {% for e in form.year_id.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                </div>
+
+                <div class="mb-3">
+                    {{ form.semester_id.label(class='form-label fw-medium') }}
+                    {{ form.semester_id(id='semester_id', class='form-select' + (' is-invalid' if form.semester_id.errors else '')) }}
+                    {% for e in form.semester_id.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                </div>
+
+                <div class="mb-4">
+                    {{ form.subject_id.label(class='form-label fw-medium') }}
+                    {{ form.subject_id(id='subject_id', class='form-select' + (' is-invalid' if form.subject_id.errors else '')) }}
+                    {% for e in form.subject_id.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                </div>
+
+                <div class="mb-4">
+                    {{ form.note_file.label(class='form-label fw-medium') }}
+                    {{ form.note_file(class='form-control' + (' is-invalid' if form.note_file.errors else ''), accept='.pdf,.jpg,.jpeg,.png') }}
+                    <div class="form-text">Accepted formats: PDF, JPG, JPEG, PNG</div>
+                    {% for e in form.note_file.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+                </div>
+
+                {{ form.submit(class='btn btn-primary w-100 py-2 fw-medium') }}
+            </form>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+    var chain = ['university_id', 'department_id', 'year_id', 'semester_id', 'subject_id'];
+    var config = {
+        department_id: { url: '/api/departments', param: 'university_id', valueKey: 'id', textKey: 'name',  placeholder: '-- Select Department --' },
+        year_id:       { url: '/api/years',        param: 'department_id', valueKey: 'id', textKey: 'label', placeholder: '-- Select Year --' },
+        semester_id:   { url: '/api/semesters',    param: 'year_id',       valueKey: 'id', textKey: 'label', placeholder: '-- Select Semester --' },
+        subject_id:    { url: '/api/subjects',     param: 'semester_id',   valueKey: 'id', textKey: 'name',  placeholder: '-- Select Subject --' }
+    };
+    function resetSelect(id, placeholder) {
+        var el = document.getElementById(id);
+        if (el) el.innerHTML = '<option value="0">' + placeholder + '</option>';
+    }
+    function populateSelect(id, items, valueKey, textKey, placeholder) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        el.innerHTML = '<option value="0">' + placeholder + '</option>';
+        items.forEach(function (item) {
+            var opt = document.createElement('option');
+            opt.value = item[valueKey];
+            opt.textContent = item[textKey];
+            el.appendChild(opt);
+        });
+    }
+    chain.forEach(function (parentId, idx) {
+        var el = document.getElementById(parentId);
+        if (!el) return;
+        el.addEventListener('change', function () {
+            var value = this.value;
+            chain.slice(idx + 1).forEach(function (childId) {
+                var cfg = config[childId];
+                if (cfg) resetSelect(childId, cfg.placeholder);
+            });
+            var nextId = chain[idx + 1];
+            if (!nextId || !value || value === '0') return;
+            var cfg = config[nextId];
+            if (!cfg) return;
+            fetch(cfg.url + '?' + cfg.param + '=' + encodeURIComponent(value))
+                .then(function (r) { return r.json(); })
+                .then(function (data) { populateSelect(nextId, data, cfg.valueKey, cfg.textKey, cfg.placeholder); })
+                .catch(function () {});
+        });
+    });
+}());
+</script>
 {% endblock %}
