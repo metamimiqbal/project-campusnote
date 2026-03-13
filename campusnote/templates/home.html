@@ -6,7 +6,7 @@
     <div class="container cn-page-shell">
 
         <div class="mb-4 text-center">
-            <h2 class="fw-bold mb-1">Welcome back, {{ current_user.username }} 👋</h2>
+            <h2 class="fw-bold mb-1">Hello Nerd, Welcome Home {{ current_user.username }}.</h2>
             <p class="text-muted mb-0">What are you studying today?</p>
         </div>
 
@@ -101,16 +101,13 @@
     <div class="container cn-page-shell">
 
         <div class="cn-hero">
-            <span class="cn-section-label">Open Academic Resource Platform</span>
-            <h1>Your Campus.<br>Your Notes.<br>
-                <span style="color:var(--cn-primary)">Your Community.</span>
+            <span class="cn-section-label">For University Students</span>
+            <h1>Hello Nerd,<br>
+                <span style="color:var(--cn-primary)">First time here?</span>
             </h1>
-            <p class="lead">
-                CampusNote is a structured student platform for sharing and discovering academic notes
-                organised by University, Department, Year, Semester, and Subject.
-            </p>
+            <p class="lead">Find notes by subject, open what you need, and start learning faster.</p>
             <div class="d-flex gap-3 justify-content-center flex-wrap">
-                <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg px-5">Get Started Free</a>
+                <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg px-5">Join Free</a>
                 <a href="{{ url_for('browse') }}"   class="btn btn-outline-secondary btn-lg px-5">Browse Notes</a>
             </div>
         </div>
@@ -122,11 +119,8 @@
                     <div class="mb-3">
                         <i class="bi bi-diagram-3 fs-2" style="color:var(--cn-primary)"></i>
                     </div>
-                    <h5 class="fw-semibold">Structured Hierarchy</h5>
-                    <p class="text-muted mb-0">
-                        Notes organised by University → Department → Year → Semester → Subject.
-                        Find exactly what you need without noise.
-                    </p>
+                    <h5 class="fw-semibold">Organized Notes</h5>
+                    <p class="text-muted mb-0">University → Department → Semester → Subject.</p>
                 </div>
             </div>
             <div class="col-md-4">
@@ -134,11 +128,8 @@
                     <div class="mb-3">
                         <i class="bi bi-search fs-2" style="color:var(--cn-primary)"></i>
                     </div>
-                    <h5 class="fw-semibold">Instant Search</h5>
-                    <p class="text-muted mb-0">
-                        Search any keyword — topic, subject, or concept — and get results in milliseconds,
-                        with optional filters to narrow them down.
-                    </p>
+                    <h5 class="fw-semibold">Quick Search</h5>
+                    <p class="text-muted mb-0">Type a topic or subject and jump straight to relevant notes.</p>
                 </div>
             </div>
             <div class="col-md-4">
@@ -146,11 +137,8 @@
                     <div class="mb-3">
                         <i class="bi bi-people fs-2" style="color:var(--cn-primary)"></i>
                     </div>
-                    <h5 class="fw-semibold">Student-Driven</h5>
-                    <p class="text-muted mb-0">
-                        Upload your notes, help your peers, and benefit from the collective knowledge
-                        of students across every department.
-                    </p>
+                    <h5 class="fw-semibold">Peer Powered</h5>
+                    <p class="text-muted mb-0">Upload helpful notes and learn from your student community.</p>
                 </div>
             </div>
         </div>

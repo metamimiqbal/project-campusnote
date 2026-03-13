@@ -1,7 +1,7 @@
 import os
 import secrets
 from PIL import Image
-from flask import Flask, render_template, url_for, request, redirect, flash, jsonify
+from flask import Flask, render_template, url_for, request, redirect, flash, jsonify, session
 from campusnote.forms import RegisterForm, LoginForm, UpdateAccountForm, UploadNoteForm
 from campusnote import app, db, bcrypt
 from flask_login import login_user, current_user, logout_user, login_required
@@ -14,9 +14,13 @@ from sqlalchemy import or_
 @app.route('/home')
 def home():
     recent_notes = []
+    welcome_state = 'guest'
+
     if current_user.is_authenticated:
         recent_notes = Note.query.order_by(Note.uploaded_at.desc()).limit(8).all()
-    return render_template('home.html', recent_notes=recent_notes)
+        welcome_state = 'member'
+
+    return render_template('home.html', recent_notes=recent_notes, welcome_state=welcome_state)
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -31,6 +35,7 @@ def register():
         db.session.add(user)
         db.session.commit()
         login_user(user)
+        session['just_registered'] = True
         flash(f'Account created successfully for {form.username.data}', 'success')
         return redirect(url_for('home'))
     return render_template('register.html', form=form)
