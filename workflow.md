@@ -224,12 +224,16 @@ Project structure overview:
 Role distribution for script (fixed, must follow):
 1. Role A (Tamim): Project Lead + Backend Integration
    - Overall architecture, Flask routing, auth flow, upload workflow, integration logic, final testing and delivery.
-2. Role B (Friend 1): Frontend Engineer
+2. Role B (Sayem): Frontend Engineer
    - Templates, Bootstrap layout, CSS system, theme switcher UX, responsive behavior, page-level UI flow.
-3. Role C (Friend 2): Database and Data Layer Engineer
+3. Role C (Adittya): Database and Data Layer Engineer
    - Schema design, constraints, relationships, SQLite + SQLAlchemy, seeding strategy, query/filter logic support.
 
-Now generate:
+
+
+
+
+<!-- Now generate:
 1. A full 12-15 minute presentation script with speaker labels:
    - Role A:
    - Role B:
@@ -245,6 +249,6 @@ Formatting constraints for your output:
 - Use natural spoken language
 - Keep each speaking turn manageable in length
 - Include explicit transitions like “Now I’ll hand over to…”
-- No fabricated features beyond provided details
+- No fabricated features beyond provided details -->
 
-PROMPT END
+
